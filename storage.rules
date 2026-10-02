@@ -1,0 +1,7 @@
+rules_version = '2';
+// The app stores certificate files on IPFS / in Firestore, not in Firebase Storage.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

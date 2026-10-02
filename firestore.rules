@@ -1,0 +1,25 @@
+rules_version = '2';
+// NOTE: this app logs in with a crypto wallet, not Firebase Auth, so Firestore cannot tell
+// WHO is writing. These rules therefore (a) allow the collections the app uses,
+// (b) make deletion and audit-log editing impossible, (c) block everything else.
+// Real per-user protection needs Firebase custom auth (wallet signature -> custom token).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /certificates/{id} {
+      allow read: if true;            // the public Verify page needs this
+      allow create, update: if true;
+      allow delete: if false;
+    }
+    match /users/{id} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if false;
+    }
+    match /auditLogs/{id} {
+      allow read: if true;
+      allow create: if true;          // append-only
+      allow update, delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
